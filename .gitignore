@@ -32,5 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-### 配置 ###
-application.yml
+### Spring Boot ###
+**/*.yml
+
+### WeChat ###
+**/*.config.json
