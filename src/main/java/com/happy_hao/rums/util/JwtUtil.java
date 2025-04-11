@@ -1,7 +1,7 @@
 package com.happy_hao.rums.util;
 
-import com.happy_hao.pdsds_backend.config.JwtConfig;
-import com.happy_hao.pdsds_backend.exception.ServiceException;
+import com.happy_hao.rums.config.JwtConfig;
+import com.happy_hao.rums.exception.ServiceException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;

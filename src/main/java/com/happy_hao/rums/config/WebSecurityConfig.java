@@ -31,10 +31,8 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/user/login", "/user/register", "/user/logout").permitAll()
+                        .requestMatchers("/**", "/user/register/**", "/user/login/**", "/user/logout", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/doctor/**").hasRole("DOCTOR")
-                        .requestMatchers("/patient/**").hasRole("PATIENT")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -44,9 +42,9 @@ public class WebSecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessHandler(new MyLogoutSuccessHandler())
                 )
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new MyAuthenticationEntryPoint())
-                )
+//                .exceptionHandling(exception -> exception
+//                        .authenticationEntryPoint(new MyAuthenticationEntryPoint())
+//                )
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session
                         .maximumSessions(1).expiredSessionStrategy(new MySessionInformationExpiredStrategy())

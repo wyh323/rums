@@ -1,7 +1,6 @@
 package com.happy_hao.rums.util;
 
-import com.happy_hao.pdsds_backend.exception.ServiceException;
-
+import com.happy_hao.rums.exception.ServiceException;
 import java.util.Date;
 
 public class SnowFlakeUtil {

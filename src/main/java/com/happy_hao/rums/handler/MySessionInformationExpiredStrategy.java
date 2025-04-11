@@ -1,7 +1,7 @@
 package com.happy_hao.rums.handler;
 
 import com.alibaba.fastjson2.JSON;
-import com.happy_hao.pdsds_backend.common.Result;
+import com.happy_hao.rums.common.Result;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.session.SessionInformationExpiredEvent;

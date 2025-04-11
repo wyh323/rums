@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -22,10 +23,10 @@ public class Classification {
     private String classificationName; // 分组名
 
     @TableField("create_at")
-    private LocalDateTime createAt; // 创建时间
+    private Date createAt; // 创建时间
 
     @TableField("update_at")
-    private LocalDateTime updateAt; // 更新时间
+    private Date updateAt; // 更新时间
 
     @TableField("description")
     private String description;
