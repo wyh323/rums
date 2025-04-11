@@ -31,7 +31,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/**", "/user/register/**", "/user/login/**", "/user/logout", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/user/register/**", "/user/login/form", "/user/logout", "/doc.html",  "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -49,7 +49,8 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .maximumSessions(1).expiredSessionStrategy(new MySessionInformationExpiredStrategy())
                 )
-                .csrf(AbstractHttpConfigurer::disable);
+                .csrf(AbstractHttpConfigurer::disable)
+                .oauth2Login(Customizer.withDefaults());
 
         return http.build();
     }

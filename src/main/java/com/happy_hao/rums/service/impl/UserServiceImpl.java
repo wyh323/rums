@@ -16,7 +16,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +36,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private JwtUtil jwtUtil;
+
+    @Resource
+    private UserDetailsService userDetailsService;
 
     @Override
     public Result registerUp(RegisterUpRequest registerUpRequest) {
@@ -122,6 +127,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } catch (AuthenticationException e) {
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    @Override
+    public Result userInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new ServiceException("请登录1");
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof OAuth2User oauth2User)) {
+            User user = (User) principal;
+            return Result.success().data("user", user);
+        }
+
+        Map<String, Object> userAttributes = oauth2User.getAttributes();
+
+        String phone = ((String) userAttributes.get("mobile")).replace("+86", "");
+        User user = (User) userDetailsService.loadUserByUsername(phone);
+
+        return Result.success().data("user", user);
     }
 
     public static String generateRandomString(int length) {

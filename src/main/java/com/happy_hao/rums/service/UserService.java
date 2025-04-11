@@ -14,4 +14,6 @@ public interface UserService extends IService<User> {
     Result registerPh(RegisterPhRequest registerPhRequest);
 
     Result login(LoginRequest loginRequest);
+
+    Result userInfo();
 }
