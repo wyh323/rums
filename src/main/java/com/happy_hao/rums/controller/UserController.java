@@ -22,34 +22,16 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    private final RestClient restClient;
+//    private final RestClient restClient;
+//
+//    public UserController(RestClient restClient) {
+//        this.restClient = restClient;
+//    }
 
-    public UserController(RestClient restClient) {
-        this.restClient = restClient;
-    }
+    @PostMapping("/register/form")
+    public Result registerForm(@Valid @RequestBody RegisterRequest registerRequest) {
 
-    @PostMapping("/register/up")
-    public Result registerUp(@Valid @RequestBody RegisterUpRequest registerUpRequest) {
-
-        return userService.registerUp(registerUpRequest);
-    }
-
-    @PostMapping("/register/ep")
-    public Result registerEp(@Valid @RequestBody RegisterEpRequest registerEpRequest) {
-
-        return userService.registerEp(registerEpRequest);
-    }
-
-    @PostMapping("/register/phone")
-    public Result registerPh(@Valid @RequestBody RegisterPhRequest registerPhRequest) {
-
-        return userService.registerPh(registerPhRequest);
-    }
-
-    @GetMapping("/register/feishu")
-    public Result registerFs(@RequestParam String code) {
-
-        return userService.registerFs(code);
+        return userService.registerForm(registerRequest);
     }
 
     @PostMapping("/login/form")

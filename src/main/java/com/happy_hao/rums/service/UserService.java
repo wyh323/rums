@@ -4,16 +4,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.happy_hao.rums.common.Result;
 import com.happy_hao.rums.dto.*;
 import com.happy_hao.rums.po.User;
+import jakarta.validation.Valid;
 
 public interface UserService extends IService<User> {
 
-    Result registerUp(RegisterUpRequest registerUpRequest);
-
-    Result registerEp(RegisterEpRequest registerEpRequest);
-
-    Result registerPh(RegisterPhRequest registerPhRequest);
-
-    Result registerFs(String code);
+    Result registerForm(RegisterRequest registerRequest);
 
     Result loginForm(LoginRequest loginRequest);
 

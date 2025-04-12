@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .register-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .register-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .register-container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .register-container input {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .register-container button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .register-container button:hover {
+            background-color: #0056b3;
+        }
+        .register-container .feishu-register {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .register-container .feishu-register button {
+            background-color: #00a8ff;
+        }
+    </style>
+</head>
+<body>
+<div class="register-container">
+    <h2>注册</h2>
+    <form id="registerForm">
+        <input type="text" id="username" name="username" placeholder="用户名" required>
+        <input type="password" id="password" name="password" placeholder="密码" required>
+        <button type="submit">表单注册</button>
+    </form>
+    <div class="feishu-register">
+        <button id="feishuRegisterBtn">飞书注册</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // 构造请求数据
+        const registerData = {
+            identifier: username,
+            password: password
+        };
+
+        // 使用 fetch 发送 POST 请求
+        fetch('/user/register/form', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(registerData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('注册响应:', data);
+                if (data.status === "200") {
+                    alert('表单注册成功！');
+                } else {
+                    alert('注册失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('注册请求失败:', error);
+                alert('注册请求失败，请稍后再试');
+            });
+    });
+
+    document.getElementById('feishuRegisterBtn').addEventListener('click', function() {
+        // 替换为你的飞书授权 URL
+        window.location.href = 'https://passport.feishu.cn/suite/passport/oauth/authorize?client_id=cli_a7726388ed9f900e&redirect_uri=http://localhost:8080/user/register/feishu&response_type=code';
+    });
+</script>
+</body>
+</html>

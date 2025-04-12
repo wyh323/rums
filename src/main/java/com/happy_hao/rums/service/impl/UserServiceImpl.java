@@ -12,6 +12,7 @@ import com.happy_hao.rums.po.User;
 import com.happy_hao.rums.exception.ServiceException;
 import com.happy_hao.rums.mapper.UserMapper;
 import com.happy_hao.rums.service.UserService;
+import com.happy_hao.rums.util.FormUtil;
 import com.happy_hao.rums.util.JwtUtil;
 import com.happy_hao.rums.util.SnowFlakeUtil;
 import jakarta.annotation.Resource;
@@ -26,10 +27,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -49,33 +47,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private FeishuConfig feishuConfig;
 
-    @Override
-    public Result registerUp(RegisterUpRequest registerUpRequest) {
-
-        if (this.getOne(new QueryWrapper<User>().eq("username", registerUpRequest.getUsername())) != null) {
-            throw new ServiceException("用户名已被注册");
-        }
-
-        User user = new User();
-        user.setUserId(SnowFlakeUtil.getSnowFlakeId());
-        user.setUsername(registerUpRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(registerUpRequest.getPassword()));
-        user.setEnabled(true);
-        user.setCreateAt(new Date());
-        this.save(user);
-
-        return Result.success().message("注册成功");
-    }
+    @Resource
+    private FormUtil formUtil;
 
     @Override
-    public Result registerEp(RegisterEpRequest registerEpRequest) {
-
-        if (this.getOne(new QueryWrapper<User>().eq("email", registerEpRequest.getEmail())) != null) {
-            throw new ServiceException("邮箱已被注册");
-        }
-
-        if (!registerEpRequest.getVerificationCode().equals(registerEpRequest.getVerificationCode())) {
-            throw new ServiceException("验证码不正确");
+    public Result registerForm(RegisterRequest registerRequest) {
+        String identifier = registerRequest.getIdentifier();
+        User user1 = (User) userDetailsService.loadUserByUsername(identifier);
+        if (user1 != null) {
+            throw new ServiceException("用户名/邮箱/电话已被注册");
         }
 
         User user = new User();
@@ -84,67 +64,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         while (this.getOne(new QueryWrapper<User>().eq("username", e)) != null) {
             e = generateRandomString(20);
         }
-        user.setUsername(e);
-        user.setEmail(registerEpRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(registerEpRequest.getPassword()));
+        if (formUtil.isEmail(identifier)) {
+            user.setUsername(e);
+            user.setEmail(identifier);
+        } else if (formUtil.isPhone(identifier)) {
+            user.setUsername(e);
+            user.setPhone(identifier);
+        } else {
+            user.setUsername(identifier);
+        }
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setEnabled(true);
         user.setCreateAt(new Date());
         this.save(user);
 
         return Result.success().message("注册成功");
-    }
-
-    @Override
-    public Result registerPh(RegisterPhRequest registerPhRequest) {
-        if (this.getOne(new QueryWrapper<User>().eq("phone", registerPhRequest.getPhone())) != null) {
-            throw new ServiceException("电话号码已被注册");
-        }
-
-        if (!registerPhRequest.getVerificationCode().equals(registerPhRequest.getVerificationCode())) {
-            throw new ServiceException("验证码不正确");
-        }
-
-        User user = new User();
-        user.setUserId(SnowFlakeUtil.getSnowFlakeId());
-        String e = generateRandomString(20);
-        while (this.getOne(new QueryWrapper<User>().eq("username", e)) != null) {
-            e = generateRandomString(20);
-        }
-        user.setUsername(e);
-        user.setPhone(registerPhRequest.getPhone());
-        user.setPassword(passwordEncoder.encode(registerPhRequest.getPassword()));
-        user.setEnabled(true);
-        user.setCreateAt(new Date());
-        this.save(user);
-
-        return Result.success().message("注册成功");
-    }
-
-    @Override
-    public Result registerFs(String code) {
-        String phone = getPhoneByCode(code);
-        if (phone == null) {
-            throw new ServiceException("失败");
-        }
-
-        if (this.getOne(new QueryWrapper<User>().eq("phone", phone)) != null) {
-            throw new ServiceException("电话号码已被注册");
-        }
-
-        User user = new User();
-        user.setUserId(SnowFlakeUtil.getSnowFlakeId());
-        String e = generateRandomString(20);
-        while (this.getOne(new QueryWrapper<User>().eq("username", e)) != null) {
-            e = generateRandomString(20);
-        }
-        user.setUsername(e);
-        user.setPhone(phone);
-        user.setPassword(passwordEncoder.encode("w12345678"));
-        user.setEnabled(true);
-        user.setCreateAt(new Date());
-        this.save(user);
-
-        return Result.success().message("注册成功,初始密码w12345678,请尽快修改");
     }
 
     @Override
@@ -167,8 +101,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Result loginFeishu(String code) {
-        User user = (User) userDetailsService.loadUserByUsername(getPhoneByCode(code));
-        return Result.success().data("user", user);
+        String phone = getPhoneByCode(code);
+        User user1 = (User) userDetailsService.loadUserByUsername(phone);
+        if (user1 == null) {
+            User user = new User();
+            user.setUserId(SnowFlakeUtil.getSnowFlakeId());
+            String e = generateRandomString(20);
+            while (this.getOne(new QueryWrapper<User>().eq("username", e)) != null) {
+                e = generateRandomString(20);
+            }
+            user.setUsername(e);
+            user.setPhone(phone);
+            user.setPassword(passwordEncoder.encode("w12345678"));
+            user.setEnabled(true);
+            user.setCreateAt(new Date());
+            this.save(user);
+            return Result.success().message("注册成功,初始密码为w12345678,请尽快修改");
+        }
+        return Result.success().message("登录成功").data("user", user1);
     }
 
     @Override
