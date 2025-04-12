@@ -36,11 +36,23 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .successHandler(new MyAuthenticationSuccessHandler())
-                        .failureHandler(new MyAuthenticationFailureHandler() )
+                        .loginPage("/Login.html")
+                        .defaultSuccessUrl("/user/manage/userInfo", false)
+                        .failureUrl("/Login.html")
+                        .permitAll()
                 )
-                .logout(logout -> logout
-                        .logoutSuccessHandler(new MyLogoutSuccessHandler())
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/Login.html")
+                        .defaultSuccessUrl("/user/manage/userInfo", false)
+                        .failureUrl("/Login.html")
+                        .permitAll()
+                )
+                .logout((logout) -> logout
+                        .logoutUrl("/user/logout") // 自定义登出路径
+                        .logoutSuccessUrl("/Login.html") // 登出成功后的重定向路径
+                        .invalidateHttpSession(true) // 使 HTTP 会话失效
+                        .deleteCookies("JSESSIONID") // 删除指定的 Cookie
+                        .permitAll() // 允许所有用户访问登出路径
                 )
 //                .exceptionHandling(exception -> exception
 //                        .authenticationEntryPoint(new MyAuthenticationEntryPoint())
@@ -49,8 +61,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .maximumSessions(1).expiredSessionStrategy(new MySessionInformationExpiredStrategy())
                 )
-                .csrf(AbstractHttpConfigurer::disable)
-                .oauth2Login(Customizer.withDefaults());
+                .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
     }

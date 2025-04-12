@@ -53,7 +53,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Result registerForm(RegisterRequest registerRequest) {
         String identifier = registerRequest.getIdentifier();
-        User user1 = (User) userDetailsService.loadUserByUsername(identifier);
+        User user1 = formUtil.getUser(identifier);
         if (user1 != null) {
             throw new ServiceException("用户名/邮箱/电话已被注册");
         }
@@ -102,7 +102,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Result loginFeishu(String code) {
         String phone = getPhoneByCode(code);
-        User user1 = (User) userDetailsService.loadUserByUsername(phone);
+        User user1 = formUtil.getUser(phone);
         if (user1 == null) {
             User user = new User();
             user.setUserId(SnowFlakeUtil.getSnowFlakeId());
