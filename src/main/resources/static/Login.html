@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .login-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .login-container input {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .login-container button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        .login-container .feishu-login {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .login-container .feishu-login button {
+            background-color: #00a8ff;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>登录</h2>
+    <form id="loginForm">
+        <input type="text" id="username" name="username" placeholder="用户名" required>
+        <input type="password" id="password" name="password" placeholder="密码" required>
+        <button type="submit">表单登录</button>
+    </form>
+    <div class="feishu-login">
+        <button id="feishuLoginBtn">飞书登录</button>
+    </div>
+</div>
+
+<script>
+    // 表单登录
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // 构造请求数据
+        const loginData = {
+            identifier: username,
+            password: password
+        };
+
+        // 使用 fetch 发送 POST 请求
+        fetch('/user/login/form', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(loginData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('登录响应:', data);
+                if (data.status === "200") {
+                    alert('表单登录成功！');
+                } else {
+                    alert('登录失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('登录请求失败:', error);
+                alert('登录请求失败，请稍后再试');
+            });
+    });
+
+    // 飞书登录
+    document.getElementById('feishuLoginBtn').addEventListener('click', function() {
+        // 替换为你的飞书授权 URL
+        window.location.href = 'https://passport.feishu.cn/suite/passport/oauth/authorize?client_id=cli_a7726388ed9f900e&redirect_uri=http://localhost:8080/user/login/feishu&response_type=code';
+    });
+</script>
+</body>
+</html>

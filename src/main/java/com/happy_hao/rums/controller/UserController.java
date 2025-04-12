@@ -46,34 +46,26 @@ public class UserController {
         return userService.registerPh(registerPhRequest);
     }
 
-    @PostMapping("/login/form")
-    public Result login(@Valid @RequestBody LoginRequest loginRequest) {
+    @GetMapping("/register/feishu")
+    public Result registerFs(@RequestParam String code) {
 
-        return userService.login(loginRequest);
+        return userService.registerFs(code);
+    }
+
+    @PostMapping("/login/form")
+    public Result loginForm(@Valid @RequestBody LoginRequest loginRequest) {
+
+        return userService.loginForm(loginRequest);
+    }
+
+    @GetMapping("/login/feishu")
+    public Result loginFeishu(@RequestParam String code) {
+
+        return userService.loginFeishu(code);
     }
 
     @GetMapping("manage/userInfo")
     public Result getUserInfo() {
         return userService.userInfo();
-    }
-
-    @GetMapping("/manage/messages")
-    public String messages(Model model,
-                           @RegisteredOAuth2AuthorizedClient("feishu") OAuth2AuthorizedClient authorizedClient,
-                           @AuthenticationPrincipal OAuth2User oauth2User) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Authentication principal: " + authentication.getPrincipal());
-        System.out.println("oauth2User: " + oauth2User);
-
-        if (oauth2User == null) {
-            System.out.println("OAuth2User is null");
-            return "redirect:/login";
-        }
-
-        model.addAttribute("username", oauth2User.getAttribute("name"));
-        model.addAttribute("phone", oauth2User.getAttribute("mobile"));
-        model.addAttribute("client", authorizedClient.getClientRegistration().getClientName());
-
-        return "UserInfo";
     }
 }

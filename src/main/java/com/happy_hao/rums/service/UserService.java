@@ -13,7 +13,11 @@ public interface UserService extends IService<User> {
 
     Result registerPh(RegisterPhRequest registerPhRequest);
 
-    Result login(LoginRequest loginRequest);
+    Result registerFs(String code);
+
+    Result loginForm(LoginRequest loginRequest);
+
+    Result loginFeishu(String code);
 
     Result userInfo();
 }
